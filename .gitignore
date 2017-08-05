@@ -5,3 +5,6 @@ build
 .idea
 .vscode
 .gradle
+.settings
+.project
+.classpath
