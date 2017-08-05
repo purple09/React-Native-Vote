@@ -50,6 +50,34 @@ public class RNCardViewManager extends ViewGroupManager<RNCardView> {
         view.setRnBackgroundColor(color);
     }
 
+/*
+    @ReactProp(name = "contentPadding")
+    public void setCardContentPadding(RNCardView view, ReadableArray paddings) {
+        int paddingTop = 0;
+        int paddingRight = 0;
+        int paddingBottom = 0;
+        int paddingLeft = 0;
+        if (paddings.size() == 1) {
+            paddingTop = paddingRight = paddingBottom = paddingLeft = paddings.getInt(0);
+        } else if (paddings.size() == 2) {
+            paddingTop = paddingBottom = paddings.getInt(0);
+            paddingLeft = paddingRight = paddings.getInt(1);
+        } else if (paddings.size() == 3) {
+            paddingTop = paddings.getInt(0);
+            paddingLeft = paddingRight = paddings.getInt(1);
+            paddingBottom = paddings.getInt(2);
+        } else if (paddings.size() >= 4) {
+            paddingTop = paddings.getInt(0);
+            paddingRight = paddings.getInt(1);
+            paddingBottom = paddings.getInt(2);
+            paddingLeft = paddings.getInt(3);
+        } else {
+            return;
+        }
+        view.setContentPadding(paddingLeft, paddingTop, paddingRight, paddingBottom);
+    }
+*/
+
     @Override
     public View getChildAt(RNCardView parent, int index) {
         View content = parent.getChildAt(0);

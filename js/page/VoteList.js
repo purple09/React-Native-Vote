@@ -1,61 +1,120 @@
 import React from 'react';
-import { Text, View, Button, Image, Dimensions } from 'react-native';
+import { Text, View, Button, Image, Dimensions, FlatList, Alert, StyleSheet, TouchableWithoutFeedback } from 'react-native';
 import TitleBar from '../common/TitleBar';
 import VoteCenter from '../net/VoteCenter';
 import ResizeHeightImage from '../common/ResizeHeightImage'
-import CardView from 'react-native-cardview'
+import CardView from 'react-native-cardview';
+import VoteListItem from '../common/VoteListItem';
+import VoteItem1 from '../common/VoteItem1';
 
 export default class VoteList extends React.Component {
   static navigationOptions = {
-    title: 'Welcome',
     header: null
   };
+
+  static limit = 10;
 
   constructor(props) {
     super(props);
     this.state = {
-      title: '有色投票'
+      data: []
     }
   }
 
   componentDidMount() {
-    VoteCenter.getList(1, 10)
-      .then((VoteList) => {
-        // console.log(`VoteList===` + JSON.stringify(VoteList));
+    this.page = 1;
+    this.canLoadMore = true;
+    this.isLoading = true;
+    this.loadData();
+  }
+
+  loadData = () => {
+    console.log('loadData');
+    VoteCenter.getList(this.page, VoteList.limit)
+      .then((result) => {
+        this.isLoading = false;
+        if (result.code == 0 && result.data && result.data.list) {
+          this.setState({
+            data: this.state.data.concat(result.data.list)
+          });
+          this.canLoadMore = (result.data.list.length == VoteList.limit);
+        } else {
+          Alert.alert(result.msg);
+        }
+      })
+      .catch((error) => {
+        this.isLoading = false;
+        Alert.alert('请求失败');
       });
   }
+
+  loadMore = () => {
+    console.log('loadMore');
+    if (this.canLoadMore) {
+      this.page++;
+      this.loadData();
+    }
+  }
+
+  onPressItem = (id) => {
+    this.props.navigation.navigate('detail', { voteid: id });
+  };
+
+  renderItem = ({ item }) => {
+    return <VoteListItem
+      data={item}
+      onPress={this.onPressItem}
+    />
+  };
 
   render() {
     const { navigate } = this.props.navigation;
 
     return (
-      <View>
+      <View style={styles.container}>
         <TitleBar
-          title={this.state.title}
+          title={'有色投票'}
           showBack={false}
         />
-        <Text>Hello, Chat App!</Text>
-        <ResizeHeightImage
-          source={{ uri: 'http://facebook.github.io/react/img/logo_og.png' }}
-          resizeMode='contain'
-          style={{
-            width: Dimensions.get('window').width - 20, height: 100, margin: 10
-          }}
+        <VoteItem1 data={{
+          "id": 622,
+          "name": "安师大",
+          "url": "",
+          "description": "123",
+          "shop_url": "",
+          "vote_num": 5,
+          "vote_list": [
+            708112,
+            708030,
+            708028,
+            803610,
+            803608
+          ],
+          "is_voted": 0,
+          "order": 1
+        }} />
+        <FlatList
+          style={styles.list}
+          keyExtractor={(item, index) => item.id}
+          data={this.state.data}
+          renderItem={this.renderItem}
+          ItemSeparatorComponent={() => <View style={{ height: 10, backgroundColor: 'white' }} />}
+          ListHeaderComponent={() => <View style={{ height: 10, backgroundColor: 'white' }} />}
+          ListFooterComponent={() => <View style={{ height: 50, backgroundColor: 'white' }} />}
+          onEndReached={this.loadMore}
+          onEndReachedThreshold={0.2}
         />
-        <CardView
-          style={{ width: 200, height: 200 }}
-          cardElevation={15}
-          cornerRadius={15}>
-          <Text>
-            Elevation 0
-          </Text>
-        </CardView>
-        <Button
-          style={{ color: 'blue' }}
-          onPress={() => navigate('detail')}
-          title="what"
-        />
-      </View>
+
+      </View >
     );
   }
 }
+
+const styles = StyleSheet.create({
+  container: {
+    flex: 1
+  },
+  list: {
+    backgroundColor: 'white'
+  }
+});

@@ -6,27 +6,40 @@ export default class ResizeHeightImage extends React.Component {
 
     constructor(props) {
         super(props);
-        this.state = {
-            width: this.props.style.width ? this.props.style.width : ResizeHeightImage.defaultSize,
-            height: this.props.style.height ? this.props.style.height : ResizeHeightImage.defaultSize,
-        }
     }
 
     static defaultProps = {
         style: {}
     }
 
-    componentDidMount() {
+    layout(e) {
+        this.layoutParams = {
+            width: e.nativeEvent.layout.width
+        }
+    }
+
+    loadEnd() {
         Image.getSize(this.props.source.uri, (width, height) => {
-            const newHeight = height * this.state.width / width
-            this.setState({ height: newHeight });
+            let newHeight = height * (this.layoutParams ? this.layoutParams.width : 100) / width
+            this.image && this.image.setNativeProps({
+                style: {
+                    height: newHeight
+                }
+            });
         });
+    }
+
+    componentDidMount() {
+
     }
 
     render() {
         return <Image
+            ref={view => this.image = view}
             {...this.props}
-            style={{ ...this.props.style, height: this.state.height }}
+            onLoadEnd={this.loadEnd.bind(this)}
+            onLayout={this.layout.bind(this)}
+            style={this.props.style}
         />
     }
 
