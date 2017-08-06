@@ -76,23 +76,25 @@ export default class VoteList extends React.Component {
           title={'有色投票'}
           showBack={false}
         />
-        <VoteItem1 data={{
-          "id": 622,
-          "name": "安师大",
-          "url": "",
-          "description": "123",
-          "shop_url": "",
-          "vote_num": 5,
-          "vote_list": [
-            708112,
-            708030,
-            708028,
-            803610,
-            803608
-          ],
-          "is_voted": 0,
-          "order": 1
-        }} />
+        <VoteItem1
+          onPressVote={(item) => Alert.alert(JSON.stringify(item))}
+          data={{
+            "id": 622,
+            "name": "安师大",
+            "url": "https://ohe31mpy9.qnssl.com/test/admin/company/ZMzNO20170621195001.jpeg",
+            "description": "123",
+            "shop_url": "",
+            "vote_num": 5,
+            "vote_list": [
+              708112,
+              708030,
+              708028,
+              803610,
+              803608
+            ],
+            "is_voted": 0,
+            "order": 1
+          }} />
         <FlatList
           style={styles.list}
           keyExtractor={(item, index) => item.id}

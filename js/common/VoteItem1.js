@@ -4,6 +4,10 @@ import ResizeHeightImage from './ResizeHeightImage';
 
 export default class VoteItem1 extends React.Component {
 
+    static propTypes = {
+        data: PropTypes.object,
+        onPressVote: PropTypes.func,
+    }
 
     constructor(props) {
         super(props)
@@ -30,14 +34,16 @@ export default class VoteItem1 extends React.Component {
 
                     </Text>
                     {this.state.showDesc && <Text>{this.props.data.description}</Text>}
+                    {this.props.data.url && <ResizeHeightImage source={{ uri: this.props.data.url }} style={styles.img} />}
                 </View>
-                <Button
-                    disabled={!!this.props.data.is_voted}
-                    color={this.props.data.is_voted ? 'gray' : 'red'}
-                    title={'投票'}
-                    style={styles.btn}
-                />
+                <Text
+                    onPress={this.props.onPressVote && this.props.onPressVote.bind(null, this.props.data)}
+                    style={StyleSheet.flatten([styles.btn, { backgroundColor: this.props.data.is_voted ? 'gray' : 'red' }])}
+                >
+                    投票
+                </Text>
             </View>
+
         </View >
     }
 
@@ -45,15 +51,23 @@ export default class VoteItem1 extends React.Component {
 
 const styles = StyleSheet.create({
     container: {
-        marginHorizontal: 10,
-
+        marginHorizontal: 12,
+        borderColor: 'gray',
+        borderWidth: 0.5,
+        borderRadius: 5,
     },
     content: {
+        padding: 10,
         flexDirection: 'row',
         justifyContent: 'space-around',
         alignItems: 'flex-start',
     },
     btn: {
+        fontSize: 12,
+        color: 'white',
+        paddingVertical: 2,
+        paddingHorizontal: 5,
+        borderRadius: 2,
     },
     order: {
         width: 20,
@@ -72,5 +86,8 @@ const styles = StyleSheet.create({
         flex: 1,
         flexGrow: 1,
         marginHorizontal: 5,
+    },
+    img: {
+        marginTop: 5,
     },
 });
