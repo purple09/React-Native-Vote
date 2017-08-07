@@ -4,6 +4,7 @@ import TitleBar from '../common/TitleBar';
 import VoteCenter from '../net/VoteCenter';
 import UserCenter from '../net/UserCenter';
 import VoteDetailHeader from '../common/VoteDetailHeader';
+import VoteItem1 from '../common/VoteItem1';
 
 export default class VoteDetail extends React.Component {
     static navigationOptions = {
@@ -39,17 +40,18 @@ export default class VoteDetail extends React.Component {
                 }
             })
             .then((result) => {
-                let userInfoMap = new Map();
+                let avatorMap = new Map();
                 if (result.code == 0 && result.data && result.data.infos) {
-                    result.data.infos.forEach((info) => userInfoMap.set(info.id, info.avatar));
+                    result.data.infos.forEach((info) => avatorMap.set(info.id, info.avatar));
                 }
                 this.setState({
                     data,
-                    userInfoMap
+                    avatorMap
                 });
             })
             .catch((error) => {
                 Alert.alert('请求失败===' + error);
+                console.log('error===' + error);
             });
     }
 
@@ -57,21 +59,25 @@ export default class VoteDetail extends React.Component {
         <FlatList
             style={styles.list}
             keyExtractor={(item, index) => item.id}
-            extraData={this.state.userInfoMap}
+            extraData={this.state.avatorMap}
             data={this.state.data.options}
             renderItem={this.renderItem}
-            ItemSeparatorComponent={() => <View style={{ height: 10, backgroundColor: 'white' }} />}
+            ItemSeparatorComponent={() => <View style={{ height: 20, backgroundColor: 'white' }} />}
             ListHeaderComponent={this.renderHeader()}
-            ListFooterComponent={() => <View style={{ height: 50, backgroundColor: 'blue' }} />}
+            ListFooterComponent={this.renderFooter()}
         />
 
     )
 
-    renderItem = ({ item }) =>{ 
-        console.log(this.state.userInfoMap);
-        return (
-        <Text>{JSON.stringify(item)+'==='+this.state.userInfoMap.get(item.vote_list[0])}</Text>
-    )}
+    renderItem = ({ item }) => (
+        <VoteItem1
+            data={item}
+            onPressVote={() => Alert.alert('onPressVote')}
+            maxVoteNum={100}
+            avatorMap={this.state.avatorMap}
+        />
+    );
+
 
     renderHeader = () => (
         <View>
@@ -81,6 +87,13 @@ export default class VoteDetail extends React.Component {
                 showMore={this.showMore}
                 showGift={this.showGift}
             />
+            <View style={{ height: 30, backgroundColor: 'white' }} />
+        </View>
+    )
+
+    renderFooter = () => (
+        <View style={styles.footer}>
+            <Text style={styles.footerText}>主办单位：上海有色网</Text>
         </View>
     )
 
@@ -94,7 +107,6 @@ export default class VoteDetail extends React.Component {
 
     render() {
         return (
-
             <View style={styles.container}>
                 <TitleBar
                     title={this.state.data && this.state.data.name}
@@ -116,5 +128,17 @@ const styles = StyleSheet.create({
     },
     list: {
         backgroundColor: 'white'
-    }
+    },
+    footer: {
+        marginHorizontal: 12,
+        marginTop: 50,
+        marginBottom: 100,
+        backgroundColor: 'lightgrey',
+        paddingVertical: 10,
+    },
+    footerText: {
+        textAlign: 'center',
+        fontSize: 12,
+        color: 'black',
+    },
 });
