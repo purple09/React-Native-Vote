@@ -133,7 +133,7 @@ const styles = StyleSheet.create({
         marginHorizontal: 12,
         marginTop: 50,
         marginBottom: 100,
-        backgroundColor: 'lightgrey',
+        backgroundColor: 'gainsboro',
         paddingVertical: 10,
     },
     footerText: {
