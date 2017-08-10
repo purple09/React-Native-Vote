@@ -5,6 +5,7 @@ import VoteCenter from '../net/VoteCenter';
 import UserCenter from '../net/UserCenter';
 import VoteDetailHeader from '../common/VoteDetailHeader';
 import VoteItem1 from '../common/VoteItem1';
+import { isLogin, getToken } from '../net/Constant';
 
 export default class VoteDetail extends React.Component {
     static navigationOptions = {
@@ -29,12 +30,17 @@ export default class VoteDetail extends React.Component {
                 if (result.code == 0 && result.data) {
                     data = result.data;
                     let userIds = new Set();
-                    data.options.forEach((d) => {
-                        if (d.vote_list)
-                            d.vote_list.forEach((v) => userIds.add(v));
-                    });
-                    return UserCenter.getPublicUserinfoList(Array.from(userIds));
-
+                    if (data.options)
+                        data.options.forEach((d) => {
+                            if (d.vote_list)
+                                d.vote_list.forEach((v) => userIds.add(v));
+                        });
+                    if (userIds.size > 0)
+                        return UserCenter.getPublicUserinfoList(Array.from(userIds));
+                    else
+                        return new Promise((res, rej) => {
+                            res({});
+                        });
                 } else {
                     Alert.alert(result.msg);
                 }
@@ -55,6 +61,47 @@ export default class VoteDetail extends React.Component {
             });
     }
 
+
+    showMore = () => {
+        this.props.navigation.navigate('brief', { brief: this.state.data.brief });
+    }
+
+    showGift = () => {
+        Alert.alert('showGift');
+    }
+
+    onPressVote = (item) => {
+        if (isLogin()) {
+            this.doVote(item.id);
+        } else {
+            Alert.alert('请先登录');
+        }
+
+    }
+
+    doVote = (optionId) => {
+        VoteCenter.vote(this.state.data.id, optionId)
+            .then(result => {
+                if (result.code == 0) {
+                    let data = this.state.data;
+                    for (let option of data.options) {
+                        if (option.id == optionId) {
+                            option.is_voted = 1;
+                            if (!option.vote_list) option.vote_list = [];
+                            option.vote_list.unshift('803338');
+                            break;
+                        }
+                    }
+                    this.setState({ data });
+                    Alert.alert('投票成功');
+                } else
+                    Alert.alert(result.msg);
+            })
+            .catch(error => {
+                Alert.alert('投票失败');
+            });
+    }
+
     renderContent = () => (
         <FlatList
             style={styles.list}
@@ -72,7 +119,7 @@ export default class VoteDetail extends React.Component {
     renderItem = ({ item }) => (
         <VoteItem1
             data={item}
-            onPressVote={() => Alert.alert('onPressVote')}
+            onPressVote={this.onPressVote}
             maxVoteNum={100}
             avatorMap={this.state.avatorMap}
         />
@@ -96,14 +143,6 @@ export default class VoteDetail extends React.Component {
             <Text style={styles.footerText}>主办单位：上海有色网</Text>
         </View>
     )
-
-    showMore = () => {
-        Alert.alert('showMore');
-    }
-
-    showGift = () => {
-        Alert.alert('showGift');
-    }
 
     render() {
         return (

@@ -75,15 +75,20 @@ export default class VoteItem1 extends React.Component {
             {this.props.data.vote_list
                 && this.props.data.vote_list.map(
                     (voteId, index) => {
-                        let source = require('../../img/default_avtar.png');
-                        if (this.props.avatorMap) {
-                            const avator = this.props.avatorMap.get(voteId);
-                            if (avator && avator.length > 0) source = { uri: avator };
+                        if (index < this.config.maxAvatorNum) {
+                            let source = require('../../img/default_avtar.png');
+                            if (this.props.avatorMap) {
+                                const avator = this.props.avatorMap.get(voteId);
+                                if (avator && avator.length > 0) source = { uri: avator };
+                            }
+                            return <Image
+                                key={index}
+                                style={styles.voteAvator}
+                                source={source} />
+                        } else {
+                            return null;
                         }
-                        return <Image
-                            key={index}
-                            style={styles.voteAvator}
-                            source={source} />
+
                     }
 
                 )}
