@@ -1,11 +1,12 @@
 import React from 'react';
-import { Text, View, Alert, StyleSheet, FlatList } from 'react-native';
+import { Text, View, Alert, StyleSheet, FlatList, Button } from 'react-native';
 import TitleBar from '../common/TitleBar';
 import VoteCenter from '../net/VoteCenter';
 import UserCenter from '../net/UserCenter';
 import VoteDetailHeader from '../common/VoteDetailHeader';
 import VoteItem1 from '../common/VoteItem1';
 import { isLogin, getToken } from '../net/Constant';
+import DialogBox from '../common/DialogBox'
 
 export default class VoteDetail extends React.Component {
     static navigationOptions = {
@@ -15,7 +16,7 @@ export default class VoteDetail extends React.Component {
     constructor(props) {
         super(props);
         this.state = {
-
+            showDialog: false,
         }
     }
 
@@ -67,7 +68,7 @@ export default class VoteDetail extends React.Component {
     }
 
     showGift = () => {
-        Alert.alert('showGift');
+        this.setDialogVisible(true);
     }
 
     onPressVote = (item) => {
@@ -144,9 +145,41 @@ export default class VoteDetail extends React.Component {
         </View>
     )
 
+    setDialogVisible = (visible) => {
+        this.setState({ showDialog: visible });
+    }
+
+    renderLotteryDescDialog = () => (
+        <DialogBox
+            animationType={"fade"}
+            transparent={true}
+            visible={this.state.showDialog}
+            onRequestClose={this.setDialogVisible.bind(this, false)}
+            clickOutside={this.setDialogVisible.bind(this, false)}
+        >
+            <View style={styles.dialogContainer}>
+                <Text style={styles.dialogTitle}>{this.state.data.name}</Text>
+                <Text style={styles.dialogDesc}>{this.state.data.lottery_description}</Text>
+                <View style={styles.dialogBtn}>
+                    <Button
+                        title={'参与投票'}
+                        onPress={this.setDialogVisible.bind(this, false)}
+                        color={'red'}
+                    />
+                </View>
+            </View>
+        </DialogBox>
+    )
+
+    renderLotteryResultDialog = () => {
+
+    }
+
     render() {
         return (
             <View style={styles.container}>
+                {this.state.data ? (this.state.data.is_publish ? this.renderLotteryResultDialog() : this.renderLotteryDescDialog()) : null}
+                {/* {this.state.data ?this.renderLotteryResultDialog()} */}
                 <TitleBar
                     title={this.state.data && this.state.data.name}
                     navRight={[
@@ -180,4 +213,19 @@ const styles = StyleSheet.create({
         fontSize: 12,
         color: 'black',
     },
+    dialogContainer: {
+        borderRadius: 10,
+        alignItems: 'center',
+        backgroundColor: '#fff', padding: 20,
+    },
+    dialogTitle: {
+        color: 'black',
+        fontSize: 16,
+    },
+    dialogDesc: {
+        marginTop: 5,
+    },
+    dialogBtn: {
+        marginTop: 10,
+    }
 });

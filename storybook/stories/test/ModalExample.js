@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
 import { Modal, Text, TouchableWithoutFeedback, View, Alert } from 'react-native';
-import DialogBox from './DialogBox';
+import DialogBox from '../../../js/common/DialogBox';
 
 class ModalExample extends Component {
 
